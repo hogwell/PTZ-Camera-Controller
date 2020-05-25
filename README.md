@@ -28,3 +28,9 @@ git clone https://github.com/ArduCAM/PTZ-Camera-Controller.git
 ```bash
 http://www.arducam.com/docs/cameras-for-raspberry-pi/ptz-camera/
 ```
+-------
+Added support for using the Pan-Tilt_Zoom module with the RaspiMJPEG module.
+
+## PTZ_RaspiMJPEG_Autofocus.py
+* Support autofocusing with the Arducam PTZ module used with RPi_Cam_Web_Interface.
+
