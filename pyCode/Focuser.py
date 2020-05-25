@@ -30,20 +30,20 @@ class Focuser:
     BUSY_REG_ADDR = 0x04
 
     starting_point = [
-        11000, 10000, 10000, 
-        10000, 10000, 9800, 
-        9600, 9000, 8500, 
-        8000, 7000, 6000, 
-        5000, 3500, 2000, 
-        0, 0, 0, 0
+        11000, 10000, 18800,
+        14800, 12200, 9700,
+        7500, 6000, 4900,
+        3900, 3200, 2500,
+        2200, 1900, 1700,
+        1500, 1500, 1500, 1500
     ]
     end_point = [
-        18000, 18000, 18000, 
-        18000, 18000, 18000, 
-        18000, 17500, 17500, 
-        16500, 16000, 15000, 
-        14000, 12500, 11000, 
-        9500, 7500, 5000, 4000
+        19500, 19500, 19300,
+        15800, 12800, 10500,
+        8400, 7000, 5400,
+        4400, 4000, 3500,
+        2500, 2200, 2100,
+        2000, 2000, 2000, 2000
     ]
     def __init__(self,bus):
         try:
@@ -51,7 +51,7 @@ class Focuser:
             self.bus = smbus.SMBus(bus)
         except:
             sys.exit(0)
-        
+
     def read(self,chip_addr,reg_addr):
         value = self.bus.read_word_data(chip_addr,reg_addr)
         value = ((value & 0x00FF)<< 8) | ((value & 0xFF00) >> 8)
@@ -83,28 +83,34 @@ class Focuser:
     opts = {
         OPT_FOCUS : {
             "REG_ADDR" : 0x01,
-            "MAX_VALUE": 18000,
+#            "MAX_VALUE": 18000,
+            "MAX_VALUE": 20000,
             "RESET_ADDR": 0x01 + 0x0A,
+            "MIN_VALUE": 1500,
         },
         OPT_ZOOM  : {
             "REG_ADDR" : 0x00,
             "MAX_VALUE": 18000,
             "RESET_ADDR": 0x00 + 0x0A,
+            "MIN_VALUE": 1700,
         },
         OPT_MOTOR_X : {
             "REG_ADDR" : 0x05,
             "MAX_VALUE": 180,
             "RESET_ADDR": None,
+            "MIN_VALUE": 0,
         },
         OPT_MOTOR_Y : {
             "REG_ADDR" : 0x06,
             "MAX_VALUE": 180,
             "RESET_ADDR": None,
+            "MIN_VALUE": 0,
         },
         OPT_IRCUT : {
             "REG_ADDR" : 0x0C, 
             "MAX_VALUE": 0x01,   #0x0001 open, 0x0000 close
             "RESET_ADDR": None,
+            "MIN_VALUE": 0,
         }
     }
     def reset(self,opt,flag = 1):
@@ -122,10 +128,14 @@ class Focuser:
         return self.read(self.CHIP_I2C_ADDR,info["REG_ADDR"])
 
     def set(self,opt,value,flag = 1):
+#	print("Focuser.set(%d,%d,%d)" % (opt,value,flag))
         self.waitingForFree()
         info = self.opts[opt]
+#        print "maxvalue="+str(info["MAX_VALUE"])
         if value > info["MAX_VALUE"]:
             value = info["MAX_VALUE"]
+        if value < info["MIN_VALUE"]:
+            value = info["MIN_VALUE"]
         self.write(self.CHIP_I2C_ADDR,info["REG_ADDR"],value)
         if flag & 0x01 != 0:
             self.waitingForFree()
