@@ -8,7 +8,7 @@ so that it will work in the RPi_Cam_Web_Interface web-based interface.
 
 ## PTZ_control.py
 * Main program to control the Arducam Pan Tilt Zoom focusing and IR module with RPi_Web_Cam_Interface
-* Run this at boot (e.g. from /etc/rc.local) with "python PTX_control.py &"
+* Run this in the background at boot as root (e.g. from /etc/rc.local) with "python PTZ_control.py &"
 
 ## PTZ_RaspiMJPEG_Autofocus.py
 * Support autofocusing with the Arducam PTZ module used with RPi_Cam_Web_Interface.
