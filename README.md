@@ -1,8 +1,9 @@
-* Control software for using the Arducam Pan-Tilt-Zoom module with the RaspiMJPEG module.
-* See: https://www.arducam.com/product/arducam-ptz-pan-tilt-zoom-camera-raspberry-pi/
+Control software for using the Arducam Pan-Tilt-Zoom module with the RaspiMJPEG module.
 
-* The vendor supplied software is set up to work locally only with the picamera interface.
-* This software adapts and expands that software to work with the RaspiMJPEG software module instead
+See: https://www.arducam.com/product/arducam-ptz-pan-tilt-zoom-camera-raspberry-pi/
+
+The vendor supplied software is set up to work locally only with the picamera interface.
+This software adapts and expands that software to work with the RaspiMJPEG software module instead
 so that it will work in the RPi_Cam_Web_Interface web-based interface.
 
 ## PTZ_control.py
