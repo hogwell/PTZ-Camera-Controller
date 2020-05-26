@@ -23,14 +23,9 @@ RELAY_GPIO = 17
 #enable_autofocus = False
 enable_autofocus = True
 
-import cv2 #sudo apt-get install python-opencv
-import numpy as np
-#    import picamera
-#    from picamera.array import PiRGBArray
 from Focuser import Focuser
 
 try:
-#	from PTZ_Autofocus import PTZ_Autofocus
 	from PTZ_RaspiMJPEG_Autofocus import PTZ_RaspiMJPEG_Autofocus
 
 except Exception as e:
@@ -86,8 +81,6 @@ def servosleep():
 	global RELAY_GPIO
         sleepTimer = 0
 #       print "servosleep()"
-#        ## enable the PC9685 sleep mode
-#        bus.write_byte_data(addr, 0, bus.read_byte_data(addr, 0) | 0x10) $
         GPIO.output(RELAY_GPIO, GPIO.LOW) # out
         asleep = True
 #        fannotate = open('/dev/shm/mjpeg/user_annotate.txt', 'w')
@@ -100,8 +93,6 @@ def servowake():
 	global RELAY_GPIO
         sleepTimer = 0
 #       print "servowake()"
-#        ## disable the PC9685 sleep mode
-#        bus.write_byte_data(addr, 0, bus.read_byte_data(addr, 0) & ~0x10)$
         GPIO.output(RELAY_GPIO, GPIO.HIGH) # on
         asleep = False
 #        fannotate = open('/dev/shm/mjpeg/user_annotate.txt', 'w')
@@ -144,7 +135,6 @@ def main():
 #	focuser.set(Focuser.OPT_FOCUS,12300)
 	focuser.set(Focuser.OPT_FOCUS,focus_to_zoom(4000))
 
-#	auto_focus = PTZ_Autofocus(focuser)
         auto_focus = PTZ_RaspiMJPEG_Autofocus(focuser)
 #	auto_focus.debug = True
 
@@ -159,102 +149,95 @@ def main():
         	time.sleep(.1)  # delay a little for each loop
 
 #		print "opening FIFO_pipan"
-        	# Look for a command sent on the website's pipe
 		pipein = open("/var/www/html/FIFO_pipan", 'r')
+        	# Look for a command sent on the website's pipe
 		line = pipein.readline()
-        	if line <> '':
-                	#debugging
-#                	print line
+		pipein.close()
+		try:
+	        	while line <> '':
+	                	#debugging
+	                	#print line
 
-			line_array = line.split(' ')
-			if line_array[0] == "servo":
-				sleepTimer = 0
-				if (is_asleep()):
-					servowake()
-					time.sleep(.2)
-#				print "servo set pantilt"
-#				loopCounter = 0
-#				pan_setting = scale(int(line_array[1]), 50, 250, 209, 416)
-#				tilt_setting = scale(int(line_array[2]), 80, 220, 416, 209)
-				pan_setting = scale(int(line_array[1]), 50, 250, 0xb4, 0,)
-				tilt_setting = scale(int(line_array[2]), 80, 220, 0, 0xb4)
-#				# PC9685 servo control
-#				bus.write_word_data(addr, 0x08, pan_setting)
-#				bus.write_word_data(addr, 0x0c, tilt_setting)
-#				print "pan="+str(pan_setting)+" tilt="+str(tilt_setting)
-				if focuser.get(Focuser.OPT_MOTOR_Y) != tilt_setting:
-                                	focuser.set(Focuser.OPT_MOTOR_Y, tilt_setting)
-				if focuser.get(Focuser.OPT_MOTOR_X) != pan_setting:
-	                                focuser.set(Focuser.OPT_MOTOR_X, pan_setting)
-			elif line_array[0] == "focusplus":
-#				print "focus="+str(focuser.get(Focuser.OPT_FOCUS))+"+"+str(int(line_array[1]))
-				focuser.set(Focuser.OPT_FOCUS,focuser.get(Focuser.OPT_FOCUS) + int(line_array[1]))
-				annotate(focuser)
-			elif line_array[0] == "focusminus":
-#				print "focus="+str(focuser.get(Focuser.OPT_FOCUS))+"-"+str(int(line_array[1]))
-				focuser.set(Focuser.OPT_FOCUS,focuser.get(Focuser.OPT_FOCUS) - int(line_array[1]))
-				annotate(focuser)
-			elif line_array[0] == "autofocus":
-				if enable_autofocus:
-				        fannotate = open('/dev/shm/mjpeg/user_annotate.txt', 'w')
-			        	fannotate.write('AUTOFOCUSING...\n')
-				        fannotate.close()
- 					#auto_focus.startFocus()
-#				        auto_focus.startFocus2()
-					#auto_focus.auxiliaryFocusing()
-				        best_focus,max_value = auto_focus.start_RaspiMJPEG_Autofocus()
-#					focuser.set(Focuser.OPT_FOCUS,best_focus)
-# 					max_index,max_value = auto_focus.startFocus2()
-#					time.sleep(10)
-					#print "max_index="+str(max_index)+",max_value="+str(max_value)
-				else:
+				line_array = line.split(' ')
+				line = ''
+
+				if line_array[0] == "servo":
+					sleepTimer = 0
+					if (is_asleep()):
+						servowake()
+						time.sleep(.2)
+	#				print "servo set pantilt"
+					pan_setting = scale(int(line_array[1]), 50, 250, 0xb4, 0)
+					tilt_setting = scale(int(line_array[2]), 80, 220, 0, 0xb4)
+					if focuser.get(Focuser.OPT_MOTOR_Y) != tilt_setting:
+	                                	focuser.set(Focuser.OPT_MOTOR_Y, tilt_setting)
+					if focuser.get(Focuser.OPT_MOTOR_X) != pan_setting:
+		                                focuser.set(Focuser.OPT_MOTOR_X, pan_setting)
+				elif line_array[0] == "focusplus":
+	#				print "focus="+str(focuser.get(Focuser.OPT_FOCUS))+"+"+str(int(line_array[1]))
+					focuser.set(Focuser.OPT_FOCUS,focuser.get(Focuser.OPT_FOCUS) + int(line_array[1]))
+					annotate(focuser)
+				elif line_array[0] == "focusminus":
+	#				print "focus="+str(focuser.get(Focuser.OPT_FOCUS))+"-"+str(int(line_array[1]))
+					focuser.set(Focuser.OPT_FOCUS,focuser.get(Focuser.OPT_FOCUS) - int(line_array[1]))
+					annotate(focuser)
+				elif line_array[0] == "autofocus":
+					if enable_autofocus:
+					        fannotate = open('/dev/shm/mjpeg/user_annotate.txt', 'w')
+				        	fannotate.write('AUTOFOCUSING...\n')
+					        fannotate.close()
+					        best_focus,max_value = auto_focus.start_RaspiMJPEG_Autofocus()
+	# focus has been set already:		focuser.set(Focuser.OPT_FOCUS,best_focus)
+						#print "max_index="+str(max_index)+",max_value="+str(max_value)
+					else:
+						focuser.set(Focuser.OPT_FOCUS,focus_to_zoom(focuser.get(Focuser.OPT_ZOOM)))
+					annotate(focuser)
+				elif line_array[0] == "focuszoom":
 					focuser.set(Focuser.OPT_FOCUS,focus_to_zoom(focuser.get(Focuser.OPT_ZOOM)))
-				annotate(focuser)
-			elif line_array[0] == "focuszoom":
-				focuser.set(Focuser.OPT_FOCUS,focus_to_zoom(focuser.get(Focuser.OPT_ZOOM)))
-				annotate(focuser)
-			elif line_array[0] == "zoomplus":
-#				print "zoomplus="+str(focuser.get(Focuser.OPT_ZOOM))+"+"+str(int(line_array[1]))
-				zoom = focuser.get(Focuser.OPT_ZOOM) + int(line_array[1])
-				if zoom > 15000: zoom = 15000
-				focuser.set(Focuser.OPT_ZOOM,zoom)
-				zoom = focuser.get(Focuser.OPT_ZOOM)
-#				print "zoom="+str(focuser.get(Focuser.OPT_ZOOM))
-#				time.sleep(0.5)
-	#			if enable_autofocus:
-	#				max_index,max_value = auto_focus.startFocus2()
-	#				time.sleep(5)
-	#				#print "max_index="+str(max_index)+",max_value="+str(max_value)
-	#			else:
-	#				focuser.set(Focuser.OPT_FOCUS,focus_to_zoom(zoom))
-				focuser.set(Focuser.OPT_FOCUS,focus_to_zoom(zoom))
-				annotate(focuser)
-			elif line_array[0] == "zoomminus":
-#				print "zoomminus="+str(focuser.get(Focuser.OPT_ZOOM))+"-"+str(int(line_array[1]))
-				zoom = focuser.get(Focuser.OPT_ZOOM) - int(line_array[1])
-				if zoom < 2000: zoom = 2000
-				focuser.set(Focuser.OPT_ZOOM,zoom)
-				zoom = focuser.get(Focuser.OPT_ZOOM)
-	#			if enable_autofocus:
-	#				max_index,max_value = auto_focus.startFocus2()
-	#				time.sleep(5)
-	#				#print "max_index="+str(max_index)+",max_value="+str(max_value)
-	#			else:
-	#				focuser.set(Focuser.OPT_FOCUS,focus_to_zoom(zoom))
-				focuser.set(Focuser.OPT_FOCUS,focus_to_zoom(zoom))
-				annotate(focuser)
-			elif line_array[0] == "ircutfilter":
-# 				print "IR="+str(int(line_array[1]))
-#			        focuser.set(Focuser.OPT_IRCUT,int(line_array[1]))
-				if focuser.get(Focuser.OPT_IRCUT) == 1:
-				        focuser.set(Focuser.OPT_IRCUT,0)
-				else:
-				        focuser.set(Focuser.OPT_IRCUT,1)
-			elif line_array[0] == "servosleep":
-				servosleep()
-			elif line_array[0] == "servowake":
-				servowake()
+					annotate(focuser)
+				elif line_array[0] == "zoomto":
+	#				print "zoomto="+str(int(line_array[1])
+					zoom = int(line_array[1])
+					if zoom < 2000: zoom = 2000
+					if zoom > 15000: zoom = 15000
+					focuser.set(Focuser.OPT_ZOOM,zoom)
+					while focuser.isBusy(): pass
+					#Force an autofocus next.
+					line = "autofocus 0 0"
+					annotate(focuser)
+				elif line_array[0] == "zoomplus":
+	#				print "zoomplus="+str(focuser.get(Focuser.OPT_ZOOM))+"+"+str(int(line_array[1]))
+					zoom = focuser.get(Focuser.OPT_ZOOM) + int(line_array[1])
+					if zoom > 15000: zoom = 15000
+					focuser.set(Focuser.OPT_ZOOM,zoom)
+					zoom = focuser.get(Focuser.OPT_ZOOM)
+					focuser.set(Focuser.OPT_FOCUS,focus_to_zoom(zoom))
+					annotate(focuser)
+				elif line_array[0] == "zoomminus":
+	#				print "zoomminus="+str(focuser.get(Focuser.OPT_ZOOM))+"-"+str(int(line_array[1]))
+					zoom = focuser.get(Focuser.OPT_ZOOM) - int(line_array[1])
+					if zoom < 2000: zoom = 2000
+					focuser.set(Focuser.OPT_ZOOM,zoom)
+					zoom = focuser.get(Focuser.OPT_ZOOM)
+					focuser.set(Focuser.OPT_FOCUS,focus_to_zoom(zoom))
+					annotate(focuser)
+				elif line_array[0] == "ircutfilter":
+	# 				print "IR="+str(int(line_array[1]))
+	#			        focuser.set(Focuser.OPT_IRCUT,int(line_array[1]))
+					# Toggle the Infrared cut filter
+					if focuser.get(Focuser.OPT_IRCUT) == 1:
+					        focuser.set(Focuser.OPT_IRCUT,0)
+					else:
+					        focuser.set(Focuser.OPT_IRCUT,1)
+				elif line_array[0] == "servosleep":
+					servosleep()
+				elif line_array[0] == "servowake":
+					servowake()
 
+		except Exception as e:
+			e0 = sys.exc_info()[0]
+			e1 = sys.exc_info()[1]
+			print "Exception: "+str(e0)+" - "+str(e1)
 
 if __name__ == '__main__':
 	try:
@@ -268,7 +251,7 @@ if __name__ == '__main__':
 	except Exception as e:
 		e0 = sys.exc_info()[0]
 		e1 = sys.exc_info()[1]
-		print "Exception: "+e0+" - "+e1
+		print "Exception: "+str(e0)+" - "+str(e1)
 	finally:
 		print "finally..."
 		event.set()

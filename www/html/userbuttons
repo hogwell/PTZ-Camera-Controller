@@ -1,14 +1,16 @@
 #User buttons definitions
 #maximum of six buttons
 #button name,macro,button styles,other attributes
-Focus +,FocusPlus.sh,btn,style="width:10%"
-Focus -,FocusMinus.sh,btn,style="width:10%"
-MicroFocus +,MicroFocusPlus.sh,btn,style="width:10%"
-MicroFocus -,MicroFocusMinus.sh,btn,style="width:10%"
+Focus+,FocusPlus.sh,btn,style="width:10%"
+Focus-,FocusMinus.sh,btn,style="width:10%"
+uFocus+,MicroFocusPlus.sh,btn,style="width:10%"
+uFocus-,MicroFocusMinus.sh,btn,style="width:10%"
 AutoFocus,AutoFocus.sh,btn,style="width:10%"
 FocusZoom,FocusZoom.sh,btn,style="width:10%"
-Zoom +,ZoomPlus.sh,btn,style="width:10%"
-Zoom -,ZoomMinus.sh,btn,style="width:10%"
+W,ZoomWide.sh,btn,style="width:5%"
+T,ZoomTelephoto.sh,btn,style="width:5%"
+Z+,ZoomPlus.sh,btn,style="width:5%"
+Z-,ZoomMinus.sh,btn,style="width:5%"
 #PanTilt Sleep,PanTiltSleep.sh,btn,style="width:15%"
 #PanTilt Wake,PanTiltWake.sh,btn,style="width:15%"
 IR,IRCutFilterOn.sh,btn,style="width:10%"
