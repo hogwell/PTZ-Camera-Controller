@@ -5,20 +5,22 @@ See: https://www.arducam.com/product/arducam-ptz-pan-tilt-zoom-camera-raspberry-
 The vendor supplied software is set up to work locally only with the picamera interface.
 
 This software adapts and expands that software to work with the RaspiMJPEG software module instead
-so that it will work in the RPi_Cam_Web_Interface web-based interface.
+so that it will work in the RPi-Cam-Web-Interface web-based camera control application.
+
+See: https://github.com/silvanmelchior/RPi_Cam_Web_Interface
 
 ## PTZ_control.py
-* Main program to control the Arducam Pan Tilt Zoom focusing and IR module with RPi_Web_Cam_Interface
+* Main program to control the Arducam Pan Tilt Zoom focusing and IR module with RPi-Cam-Web-Interface
 * Run this in the background at boot as root (e.g. from /etc/rc.local) with "python PTZ_control.py &"
 
 ## PTZ_RaspiMJPEG_Autofocus.py
-* Support autofocusing with the Arducam PTZ module used with RPi_Cam_Web_Interface.
+* Class that supports autofocusing the Arducam PTZ camera to be used with RPi-Cam-Web-Interface.
 
 ## www/html/userbuttons
-* Define control buttons for the RPi_Web_Cam_Interface
+* Defines control buttons for the RPi_Web_Cam_Interface web UI.
 
 ## www/html/macros/*.sh
-* Macro shell scripts to send commands to PTZ_control.py
+* Macro shell scripts to send piped commands to PTZ_control.py
 
 -------
 ## Arducam Hardware Connection
